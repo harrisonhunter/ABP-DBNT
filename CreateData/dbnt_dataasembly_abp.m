@@ -106,6 +106,7 @@ function create_data()
     %    end
     %else
     for i=1:length(segments)
+        fprintf('discretizing patient %i \n', i)
         discretizedSegments{i} = segments{i}.getDiscretizedAggregationFeatures(meanColumn,D.labelSeperators);   
     end
     fileName = strcat('data','_',num2str(D.overlapAmount),'_',num2str(D.numberOfLagUnits),'_',num2str(D.lagUnitLengthMinutes),'_',num2str(D.timeSliceSize),'.txt');
@@ -113,6 +114,7 @@ function create_data()
     dataMat = [];
     patientMap = containers.Map('KeyType', 'int32', 'valuetype', 'int32');
     for i=1:length(discretizedSegments)
+        fprintf('formatting patient %i \n', i)
         ID = str2num(segments{i}.patientID);
         if patientMap.isKey(ID)
             obv = patientMap(ID) + 1;
@@ -130,10 +132,11 @@ function create_data()
             end
         end
     end
-    
     for i=1:length(discretizedSegments)
+        fprintf('writing patient %i', i)
         fprintf(ftemp, '%d ', dataMat(i,:));
         fprintf(ftemp, '\n');
     end
+    
     fclose(ftemp);
 end
