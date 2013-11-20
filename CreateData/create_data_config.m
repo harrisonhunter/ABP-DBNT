@@ -7,7 +7,7 @@ if isempty(D)
     % data creation parameters
     D.cachePath = 'debugData/cachedData';
     D.dataPath = 'debugData/data';
-    D.tmpDir = 'debugData/tmp';
+    D.tmpDir = 'debugData';
     
     % file names for cached results
     D.segmentsFileName = 'segments.mat';

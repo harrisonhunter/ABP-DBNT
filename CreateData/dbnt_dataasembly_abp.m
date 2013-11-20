@@ -128,15 +128,90 @@ function create_data()
         dataMat(i,2) = obv; %place Holder for order id
         for j=1:sizeSeg(1);
             for k=1:sizeSeg(2);
-                dataMat(i,j * sizeSeg + k + 2) = discretizedSegments{i}(j,k);
+                dataMat(i,(((j-1) * sizeSeg(2)) + k + 2)) = discretizedSegments{i}(j,k);
             end
         end
     end
     for i=1:length(discretizedSegments)
-        fprintf('writing patient %i', i)
+        fprintf('writing patient %i \n', i)
         fprintf(ftemp, '%d ', dataMat(i,:));
         fprintf(ftemp, '\n');
     end
     
     fclose(ftemp);
 end
+
+% function create_data2()
+%     % load config file
+%     C = create_data_config;
+%   
+%     labelSeparators = C.labelSeperators;
+% 
+%     % load MIMIC data
+%     dataLoader = MIMIC_data_loader(C.dataPath);
+%   
+%     % data column values
+%     beatDurationColumn = dataLoader.beatDurationColumn;
+%     validityColumn = dataLoader.validityColumn;
+%     meanColumn = dataLoader.meanColumn;
+% 
+%     % init segments list
+%     segments = {}; 
+% 
+%     % create patient data
+%     for i = 1:length(dataLoader.patientNames)
+%         fprintf('creating patient %i from %i patients\n', i, ...
+%             length(dataLoader.patientNames));
+%         patientData = dataLoader.getNextPatient();
+%         if(isempty(patientData))
+%             continue
+%         end
+%         
+%         % create new patient object
+%         patient = patientClass(patientData, ...
+%             dataLoader.patientNames{i}, ...
+%             beatDurationColumn,validityColumn, ...
+%             C.lagUnitLengthMinutes, ...
+%             C.overlapAmount);
+%         % get patient segments
+%         patientSegments = patient.getSegments(meanColumn, ...
+%             beatDurationColumn, ...
+%             validityColumn, ...
+%             C.numberOfLagUnits, ...
+%             labelSeparators, ...
+%             C.cutOffClass);
+%         % put patient segments into segment list
+%         for j = 1:length(patientSegments)
+%             if length(unique(patientSegments{j}.lagUnitLabels)) > 1
+%                 segments{end+1} = patientSegments{j};
+%             end
+%         end
+%     end
+% 
+%     % permute segments and save them along with other vals
+% %     permutations = randperm(length(segments));
+% %     TotalNumberOfSegments = length(segments);
+% %     save([C.tmpDir C.segmentsFileName], ...
+% %         'segments', ...
+% %         'labelSeparators', ...
+% %         'meanColumn', ...
+% %         'validityColumn', ...
+% %         'beatDurationColumn', ...
+% %         'TotalNumberOfSegments', ...
+% %         '-v7.3')
+%     
+%     beatDurationColumn = dataLoader.beatDurationColumn;
+%     validityColumn = dataLoader.validityColumn;
+%     meanColumn = dataLoader.meanColumn;
+% 
+%     % MDW: what are discretized segments?
+%     discretizedSegments = cell(1,length(segments));
+%     
+%     for i=1:length(segments)
+%         fprintf('discretizing patient %i \n', i)
+%         discretizedSegments{i} = segments{i}.getDiscretizedAggregationFeatures(meanColumn,C.labelSeperators);
+%     end
+    
+%     fileName = strcat('data','_',num2str(D.overlapAmount),'_',num2str(D.numberOfLagUnits),'_',num2str(D.lagUnitLengthMinutes),'_',num2str(D.timeSliceSize),'.txt');
+%     ftemp = fopen(fileName,'w' );
+% end

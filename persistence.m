@@ -4,29 +4,23 @@ function persistence(file, lead)
     for k=1:length(lead)
         fid = fopen(file);
         tline = fgets(fid);
-        lead(k)
-        patientID = '1';
-        counter = 0;
-        sum = 0;
-        numWrong = 0;
         while ischar(tline)
+            sum = 0;
+            counter = 0;
+            numWrong = 0;
             C = strsplit(tline);
-            if str2double(C{1}) ~= str2double(patientID) && counter ~= 0
-                fprintf(ftemp, '%s %d %d %d %d', patientID, lead(k), sum, numWrong, counter);
-                fprintf(ftemp, '\n');
-                counter = 0;
-                sum = 0;
-                numWrong = 0;
-            end 
             patientID = C{1};
-            D = C(10:7:length(C));
-            for i=1:length(D)-lead(k)
-               counter = counter + 1;
-               if str2double(D{i}) ~= str2double(D{i+lead(k)})
-                  numWrong = numWrong + 1;
-                  sum = sum + abs(str2double(D{i}) - str2double(D{i+lead(k)}));
+            for i=3:(length(C)-7*lead(k)-1)
+               if mod(i-2,7) == 1
+                   counter = counter + 1;
+                   if str2double(C{i}) ~= str2double(C{i+7*lead(k)})
+                      numWrong = numWrong + 1;
+                      sum = sum + abs(str2num(C{i}) - str2num(C{i+7*lead(k)}));
+                   end
                end
             end
+            fprintf(ftemp, '%s %d %d %d %d', patientID, lead(k), sum, numWrong, counter);
+            fprintf(ftemp, '\n');
             tline = fgets(fid);
         end
         fclose(fid);
