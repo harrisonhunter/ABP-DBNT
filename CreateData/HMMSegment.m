@@ -72,7 +72,7 @@ classdef HMMSegment < handle
             obj.cumulativeBeats{end+1} = cumsum(lagUnitData(:,beatDurationColumn));
             
             % create column of class labels
-            label = map2classes(mean(lagUnitData(obj.validityIndices{end},meanColumn)),obj.labelSeperators);
+            label = map2classes_single(mean(lagUnitData(obj.validityIndices{end},meanColumn)),obj.labelSeperators);
             obj.lagUnitLabels(end+1,1) = label;
             if label < obj.cutOffClass
                 obj.numberOfClassesBelowCutOff = obj.numberOfClassesBelowCutOff + 1;
@@ -118,21 +118,20 @@ classdef HMMSegment < handle
            else
                error('Third argument should be seperators');
            end
-           for i = 1:size(discretizedAggregationFeatures,1)
-               for j = 1:size(discretizedAggregationFeatures,2)
-                   X = seperators{j};
-                   ind = find(X > aggregationFeatures(i,j), 1 );
-                   if size(ind,2) == 0 || size(ind,1) == 0
-                       ind = 10;
-                   end
-%                    i, j, ind, aggregationFeatures(i,j),seperators{j}
-                   discretizedAggregationFeatures(i,j) = ind;
-               end
-           end
-%            discretizedAggregationFeatures(:,1) = map2classes(aggregationFeatures(:,1),meanABPSeperators);
-%            for i = 2:size(aggregationFeatures,2)
-%                discretizedAggregationFeatures(:,i) = map2classes(aggregationFeatures(:,i),seperators{i}');
+%            for i = 1:size(discretizedAggregationFeatures,1)
+%                for j = 1:size(discretizedAggregationFeatures,2)
+%                    ind = find(seperators{j}; > aggregationFeatures(i,j), 1 );
+%                    if size(ind,2) == 0 || size(ind,1) == 0
+%                        ind = length(seperators{j})+1;
+%                    end
+% %                    i, j, ind, aggregationFeatures(i,j),seperators{j}
+%                    discretizedAggregationFeatures(i,j) = ind;
+%                end
 %            end
+           discretizedAggregationFeatures(:,1) = map2classes(aggregationFeatures(:,1),meanABPSeperators);
+           for i = 2:size(aggregationFeatures,2)
+               discretizedAggregationFeatures(:,i) = map2classes(aggregationFeatures(:,i),seperators{i});
+           end
                   
         end   
     end

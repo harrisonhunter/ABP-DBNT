@@ -6,7 +6,7 @@ function compress( file )
     fid = fopen(file);
     tline = fgets(fid);
     while ischar(tline)
-        count = 0;
+        count = 0
         tline = strsplit(tline);
         patientID = tline{1};
         len = length(tline);
@@ -19,11 +19,9 @@ function compress( file )
             end
         end
         %tline{i}
-        [codice, code_bin, code_book] = lempel_ziv(['0':'9'],s1);
+        lemp = lempel_ziv(['0':'9'],s1);
 %         length(lemp)
-        if count ~= 0
-            fprintf(ftemp, '%s %d %d %d %d', patientID, length(code_book), length(codice), count, (length(code_book)*1.0)/count);
-        end
+        fprintf(ftemp, '%s %d %d %d', patientID, length(lemp), co, (length(tline)*1.0)/length(lemp));
         fprintf(ftemp, '\n');
         tline = fgets(fid);
     end
