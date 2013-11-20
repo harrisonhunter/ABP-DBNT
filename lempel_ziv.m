@@ -3,7 +3,7 @@ function [codice, code_bin, code_book] = lempel_ziv(alfabeto, stringa)
 % Test with str='bcababbcabcbcbbccaabbababb' e alf=['a' : 'c']
 
 alf=alfabeto;   % It's the alphabet that contains the char used in the string
-str=stringa    % It's the string to codify
+str=stringa;    % It's the string to codify
 code_book=cell(length(alf),1);      % Initializes the code-book
 for i=1:1:length(alf)               % Inserts in code-book the firsts elements
     code_book{i}=alf(i);
