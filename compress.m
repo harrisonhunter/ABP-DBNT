@@ -7,7 +7,7 @@ function compress( file )
     tline = fgets(fid);
     while ischar(tline)
         count = 0;
-        tline = strsplit(tline);
+        tline = strread(tline,'%s','delimiter',' ');
         patientID = tline{1};
         len = length(tline);
         s1 = '';
