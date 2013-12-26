@@ -15,7 +15,7 @@ if isempty(D)
     D.postProcessFileName = 'postprocessresults.mat';
     D.predictionFileName = 'predictions.mat';
     
-    D.overlapAmount = 10;
+    D.overlapAmount = 0;
     D.labelSeperators = [50 55 60 65 70 75 80 85 90]';
     D.cutOffClass = 3;
     D.numberOfLagUnits = 12;

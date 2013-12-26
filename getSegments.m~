@@ -1,0 +1,38 @@
+function segments = getSegments(patientID, meanColumn, beatDurationColumn, validityColumn, numberOfLagUnits, labelSeperators, cutOffClass, mimic_segments)
+
+    %create segments. A segment consists of several consecutive 
+    %unit segments. Every time we get a new unit segment from the 
+    %mimic segment, we create a new segment. We then add the unit  
+    %segment we just got to every segment. At the end we go through
+    %all created segments and check if they are valid. A segment is
+    %valid if all unit segments it is made up of are valid (>50% of
+    %beats are valid) and if it contains the specified number of
+    %unit segments (i.e. it's not too small). 
+    segments = {};
+    for i = 1:length(mimic_segments)
+        HMMSegments = {};
+        mimic_segments{i}.resetSegment()
+        while(mimic_segments{i}.hasAnotherSegment)
+            lagUnitData = obj.mimic_segments{i}.getLagUnit();
+            %create a new segment
+            HMMSegments{end+1} = HMMSegment(patientID, numberOfLagUnits, labelSeperators, cutOffClass);
+            for j = 1:length(HMMSegments)
+                HMMSegments{j}.addLagUnit(lagUnitData, meanColumn, validityColumn, beatDurationColumn)
+            end
+        end
+        for j = 1:length(HMMSegments)
+            if(HMMSegments{j}.isValid() && HMMSegments{j}.isComplete())
+                segments{end+1} = HMMSegments{j};
+            end
+        end
+    end
+
+    %sort obj.segments by number of classes below class cutoff
+    numberOfClassesArray = zeros(1,length(segments));
+    for i = 1:length(segments)
+        numberOfClassesArray(i) = segments{i}.volatility_index;
+    end
+
+    [~,idx] = sort(numberOfClassesArray);
+    segments = segments(idx);               
+end

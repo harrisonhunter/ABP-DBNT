@@ -1,0 +1,38 @@
+function obj = Mimic_Segment(data, lagUnitLengthMinutes, beatDurationColumn)
+    %creates a mimic segment
+    %Arguments:
+    %data: A continuous block of data from a patient
+    %lagUnitLengthMinutes: If you want to get lag units from this
+    %segment. 
+    %beatDurationColumn Index of the column with the beat duration
+    assert(~isempty(data),'cannot create an empty segment');
+
+    obj.segmentData = data;
+    obj.lagUnitLength = lagUnitLengthMinutes*60*125;
+    obj.timeColumn = cumsum(data(:,beatDurationColumn));
+    obj.segmentPointer = 1;
+end
+
+function lagUnitData = getLagUnit(obj)
+    nextLagUnitEndTime = obj.timeColumn(obj.segmentPointer) + obj.lagUnitLength;
+    if(nextLagUnitEndTime > obj.timeColumn(end))
+        lagUnitData = [];
+    else
+        nextSegmentPointer = BinarySearch.floor(nextLagUnitEndTime,obj.timeColumn);
+        lagUnitData = obj.segmentData(obj.segmentPointer:nextSegmentPointer,:);
+        obj.segmentPointer = nextSegmentPointer;
+    end
+end
+
+function b = hasAnotherSegment(obj)
+    nextLagUnitEndTime = obj.timeColumn(obj.segmentPointer) + obj.lagUnitLength;
+    if(nextLagUnitEndTime > obj.timeColumn(end))
+        b = false;
+    else
+        b = true;
+    end
+end
+
+function resetSegment(obj)
+    obj.segmentPointer = 1;
+end

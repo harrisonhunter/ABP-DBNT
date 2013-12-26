@@ -47,30 +47,34 @@ classdef MIMIC_data_loader < handle
             %three cases, patient data could be a cell of data
             %the entry path path/patientName{i} could refer to a folder
             %the entry path path/patientName{i} could refer to a .mat file
-            
-            if obj.patientPointer > length(obj.patients)
-                patientData = [];
-            elseif isa(obj.patients{obj.patientPointer},'double')
-                patientData = obj.patients{obj.patientPointer};
-                obj.patientPointer = obj.patientPointer+1;
-            elseif ischar(obj.patients{obj.patientPointer}) && ...
-                    exist([obj.dataPath,'/',obj.patientNames{obj.patientPointer}]) == 2
-                patientData = load([obj.dataPath,'/',obj.patientNames{obj.patientPointer}]);
-                patientData = patientData.patientData;
-                obj.patientPointer = obj.patientPointer + 1;
-            elseif ischar(obj.patients{obj.patientPointer}) && ...
-                    exist([obj.dataPath,'/',obj.patientNames{obj.patientPointer}]) == 7;
-                disp(obj.patientNames{obj.patientPointer})
-                meanValues = load([obj.dataPath,'/',obj.patientNames{obj.patientPointer},'/mean.txt']);
-                validationValues = load([obj.dataPath,'/',obj.patientNames{obj.patientPointer},'/validation.txt']);
-                if(size(validationValues,2) ==3)
-                    validationValues = validationValues(:,3);
+            patientData = [];
+            try
+                if obj.patientPointer > length(obj.patients)
+                    patientData = [];
+                elseif isa(obj.patients{obj.patientPointer},'double')
+                    patientData = obj.patients{obj.patientPointer};
+                    obj.patientPointer = obj.patientPointer+1;
+                elseif ischar(obj.patients{obj.patientPointer}) && ...
+                        exist([obj.dataPath,'/',obj.patientNames{obj.patientPointer}]) == 2
+                    patientData = load([obj.dataPath,'/',obj.patientNames{obj.patientPointer}]);
+                    patientData = patientData.patientData;
+                    obj.patientPointer = obj.patientPointer + 1;
+                elseif ischar(obj.patients{obj.patientPointer}) && ...
+                        exist([obj.dataPath,'/',obj.patientNames{obj.patientPointer}]) == 7;
+                    disp(obj.patientNames{obj.patientPointer})
+                    meanValues = load([obj.dataPath,'/',obj.patientNames{obj.patientPointer},'/mean.txt']);
+                    validationValues = load([obj.dataPath,'/',obj.patientNames{obj.patientPointer},'/validation.txt']);
+                    if(size(validationValues,2) ==3)
+                        validationValues = validationValues(:,3);
+                    end
+                    durationValues = load([obj.dataPath,'/',obj.patientNames{obj.patientPointer},'/duration.txt']);
+                    patientData = [meanValues,durationValues,validationValues];
+                    obj.patientPointer = obj.patientPointer + 1;
+                else
+                    error(['cannot read ', obj.patients{obj.patientPointer}]);
                 end
-                durationValues = load([obj.dataPath,'/',obj.patientNames{obj.patientPointer},'/duration.txt']);
-                patientData = [meanValues,durationValues,validationValues];
+            catch
                 obj.patientPointer = obj.patientPointer + 1;
-            else
-                error(['cannot read ', obj.patients{obj.patientPointer}]);
             end
             
         end
